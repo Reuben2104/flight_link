@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+
 <%
 if ((session.getAttribute("user") == null)) {
 %>
@@ -13,7 +14,56 @@ Welcome <%=session.getAttribute("user")%>!
 <a href='faqs.jsp'>[FAQs]</a>
 <a href='pastReservations.jsp'>[View Past Reservations]</a>
 <a href='upcomingReservations.jsp'>[View Upcoming Reservations]</a>
+<a href="notification.jsp" class="btn btn-info">Check Notifications</a>
 
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    	function toggleAdditionalSection() {
+            var oneOrRound = document.getElementById("one_or_round");
+            var additionalSection = document.getElementById("additional_section");
+
+            additionalSection.style.display = oneOrRound.value === "0" ? "block" : "none";
+        }
+
+        document.getElementById("one_or_round").addEventListener("change", toggleAdditionalSection);
+
+        toggleAdditionalSection();
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    	function toggleAdditionalSection() {
+            var oneOrRound = document.getElementById("one_or_round");
+            var additionalSection = document.getElementById("additional_section2");
+
+            additionalSection.style.display = oneOrRound.value === "0" ? "block" : "none";
+        }
+
+        document.getElementById("one_or_round").addEventListener("change", toggleAdditionalSection);
+
+        toggleAdditionalSection();
+    });
+</script>
+
+<%-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    	function toggleAdditionalSection() {
+            var oneOrRound = document.getElementById("one_or_round");
+            var additionalSection = document.getElementById("additional_section3");
+
+            additionalSection.style.display = oneOrRound.value === "0" ? "block" : "none";
+        }
+
+        document.getElementById("one_or_round").addEventListener("change", toggleAdditionalSection);
+
+        toggleAdditionalSection();
+    });
+</script> --%>
 
 
 <p style="font-size: 30px;">Search Flights</p>
@@ -57,11 +107,21 @@ Welcome <%=session.getAttribute("user")%>!
 
 		<br>
 		
-        <label for="flight_date">Select Date:</label>
+        <label for="flight_date">Select Departure Date:</label>
         <input type="date" name="flight_date" id="flight_date" required>
         
-        <br>
-        <br>
+		<br>
+        
+        <!-- <div id="additional_section3"> -->
+		
+			<label for="flight_date2">Select Returning Date:</label>
+        	<input type="date" name="flight_date2" id="flight_date2">
+        	
+        	<br>
+			
+		<!-- </div> -->
+		
+		<br>
         
         <label for="sort">Sort by:</label>
         <select name="sort" id="sort">
@@ -74,14 +134,18 @@ Welcome <%=session.getAttribute("user")%>!
         </select>
         
         <br>
-        <br>
-		
+        <br>	
 		
 		<!-- 
 		filter the list of flights by various criteria 
 		(price, number of stops, airline, take-off time, landing time)
 		filter_price, filter_airline, filter_takeoff_time, filter_landing_time 
 		-->
+		
+		<div id="additional_section2">
+		Departing Flight Filters:
+		<br>
+		</div>
 		
 		<label for="filter_price">Filter by Price:</label>
 		<input type="number" name="filter_price" id="filter_price" placeholder="Enter maximum price">
@@ -100,19 +164,42 @@ Welcome <%=session.getAttribute("user")%>!
 		
 		<label for="filter_landing_time">Filter by Landing Time:</label>
 		<input type="time" name="filter_landing_time" id="filter_landing_time">
-
+		
 		<br>
 		<br>
-
-        <input type="submit" value="Search Flights">
-                
-    </form>
-    
-    
-
-
-
+       
+		<div id="additional_section">
+		
+		Returning Flight Filters: <br>
+		    
+		    <label for="filter_price2">Filter by Price:</label>
+			<input type="number" name="filter_price2" id="filter_price2" placeholder="Enter maximum price">
+			
+			<br>
+			
+			<label for="filter_airline2">Filter by Airline:</label>
+			<input type="text" name="filter_airline2" id="filter_airline2" placeholder="Enter airline name">
+			
+			<br>
+			
+			<label for="filter_takeoff_time2">Filter by Take-off Time:</label>
+			<input type="time" name="filter_takeoff_time2" id="filter_takeoff_time2">
+			
+			<br>
+			
+			<label for="filter_landing_time2">Filter by Landing Time:</label>
+			<input type="time" name="filter_landing_time2" id="filter_landing_time2">
+			
+			<br> 
+			<br>
+			
+		</div>
 	
+	<input type="submit" value="Search Flights">
+	</form>
+	
+	
+		    	
 <%
 }
 %>

@@ -155,7 +155,7 @@
         if(rs.next()){
             flight_1_capacity_check = rs.getBoolean("has_capacity");
             if(flight_1_capacity_check){
-                flight_1.add(""+ rs.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
+                flight_1.add(""+ (rs.getInt("booked_seats")+1)); // SEAT NUMBER AT INDEX 5
             }
         }
         else{
@@ -215,7 +215,7 @@
         boolean flight_2_capacity_check = "0".equals(oneOrRound) ? rs2.getBoolean("has_capacity") : false;
         if(flight_2_capacity_check){
             ArrayList<String> flight_2 = flight_info_list.get(1);
-            flight_2.add(""+ rs2.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
+            flight_2.add(""+ (rs2.getInt("booked_seats")+1)); // SEAT NUMBER AT INDEX 5
         }
 
         // if (ticketCount < FLIGHT_CAPACITY) {
@@ -266,13 +266,16 @@
         } else {
            if("0".equals(oneOrRound)){
                 if(flight_1_capacity_check){
-                    String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class) VALUES (?,?, ?, ?)";
+                    String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class, fname, lname, passenger_id) VALUES (?,?, ?, ?, ?, ?, ?)";
                     pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                     pstmtWaitlist.setString(1,username);
                     pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(0)));
                     pstmtWaitlist.setString(3, flight_1.get(1));
                     pstmtWaitlist.setString(4, flight_1.get(4));
+                    pstmtWaitlist.setString(5, fname);
+                    pstmtWaitlist.setString(6, lname);
+                    pstmtWaitlist.setString(7, passengerID);
 
                     pstmtWaitlist.executeUpdate();
 
@@ -281,7 +284,7 @@
                 }
                 if(flight_2_capacity_check){
                     ArrayList flight_2 = flight_info_list.get(1);
-                    String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class) VALUES (?,?, ?, ?)";
+                    String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class, fname, lname, passenger_id) VALUES (?,?, ?, ?, ?, ?, ?)";
                     pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                     pstmtWaitlist.setString(1,username);
@@ -292,6 +295,9 @@
                     // pstmtWaitlist.setString(4, flight_2.get(4));
                     pstmtWaitlist.setString(3, (String) flight_2.get(1));
                     pstmtWaitlist.setString(4, (String) flight_2.get(4));
+                    pstmtWaitlist.setString(5, fname);
+                    pstmtWaitlist.setString(6, lname);
+                    pstmtWaitlist.setString(7, passengerID);
 
                     pstmtWaitlist.executeUpdate();
 
@@ -301,13 +307,16 @@
            }
            else{
                 
-                String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class) VALUES (?,?, ?, ?)";
+                String insertWaitlistSQL = "INSERT INTO Waitlist (username, flight_number, airline_ID, class, fname, lname, passenger_id) VALUES (?,?, ?, ?, ?, ?, ?)";
                 pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                 pstmtWaitlist.setString(1,username);
                 pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(0)));
                 pstmtWaitlist.setString(3, flight_1.get(1));
                 pstmtWaitlist.setString(4, flight_1.get(4));
+                pstmtWaitlist.setString(5, fname);
+                pstmtWaitlist.setString(6, lname);
+                pstmtWaitlist.setString(7, passengerID);
 
                 pstmtWaitlist.executeUpdate();
 
