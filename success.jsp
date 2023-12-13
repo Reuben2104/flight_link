@@ -18,7 +18,7 @@ Welcome <%=session.getAttribute("user")%>!
 
 <p style="font-size: 30px;">Search Flights</p>
 
-    <form action="flightResults2.jsp" method="POST">
+    <form action="flightResults.jsp" method="POST">
         
         <label for="flexible_or_not">Select Flexibility:</label>
         <select name="flexible_or_not" id="flexible_or_not">

@@ -169,13 +169,15 @@
 			    String departureTime = result.getString("departure_time");
 			    String arrivalTime = result.getString("arrival_time");
 			    String priceString = result.getString("price");
+				String combo = flightNumber + "_" + printAirline;
+				
 			
 			%>
 			    
 			<tr>
-				<input type="radio" name="departingFlightNumber" value="<%= flightNumber %>_<%= printAirline %>">
+				<td><input type="radio" name="departingFlightNumber" value="<%=combo%>"></td>
 
-		        // <td><input type="radio" name=departingFlightNumber value="<%= flightNumber %>"></td> <!-- Added radio button -->
+		        <!-- <td><input type="radio" name=departingFlightNumber value="<%= flightNumber %>"></td>  Added radio button -->
 		        <td><%= flightNumber %></td>
 		        <td><%= printDate %></td>
 		        <td><%= printAirline %></td>
@@ -184,6 +186,7 @@
 		        <td><%= departureTime %></td>
 		        <td><%= arrivalTime %></td>
 		        <td>$<%= priceString %></td>
+				<!-- <td>$<%= combo %></td> -->
 		        
 		    
 		        <!-- Add more table cells for additional fields -->
@@ -241,13 +244,11 @@
 			    String departureTime = result2.getString("departure_time");
 			    String arrivalTime = result2.getString("arrival_time");
 			    String priceString = result2.getString("price");
-			
+				String combo = flightNumber + "_" + printAirline;
 			%>
 			    
 			<tr>
-				<input type="radio" name="returningFlightNumber" value="<%= flightNumber %>_<%= printAirline %>">
-
-		        // <td><input type="radio" name="returningFlightNumber" value="<%= flightNumber %>"></td> <!-- Added radio button -->
+				<td><input type="radio" name="returningFlightNumber" value="<%=combo%>"></td>
 		        <td><%= flightNumber %></td>
 		        <td><%= printDate %></td>
 		        <td><%= printAirline %></td>

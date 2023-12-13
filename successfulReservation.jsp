@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="java.io.*,java.util.*,java.sql.*"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +56,7 @@
 
     String oneOrRound = (String) session.getAttribute("oneOrRound"); 
     // String class_type2 = (String) session.getAttribute("classType2");
-    ArrayList<String> flight_info_list = (ArrayList<String>) session.getAttribute("flight_info_list");
+    ArrayList<ArrayList<String>> flight_info_list = (ArrayList<ArrayList<String>>) session.getAttribute("flight_info_list");
     
 
     Connection conn = null;
@@ -81,12 +83,38 @@
             checkTicketStmt.close();
         } while (!isUnique);
 
+        // do {
+        //     nextTicketNumber = (int)(Math.random() * 1000000); // Generate a random ticket number
+
+        //     String checkTicketNumberSQL = "SELECT COUNT(*) FROM Ticket WHERE ticket_number = ?";
+        //     try (PreparedStatement checkTicketStmt = conn.prepareStatement(checkTicketNumberSQL)) {
+        //         checkTicketStmt.setInt(1, nextTicketNumber);
+        //         try (ResultSet checkTicketRs = checkTicketStmt.executeQuery()) {
+        //             if (checkTicketRs.next()) {
+        //                 int count = checkTicketRs.getInt(1);
+        //                 isUnique = count == 0;
+        //             } else {
+        //                 // This means ResultSet didn't move to the first row, which is unexpected in this case
+        //                 throw new Exception("Failed to move ResultSet cursor to the first row for ticket number validation");
+        //             }
+        //         } catch (SQLException e) {
+        //             // Handle SQL exception
+        //             throw new Exception("SQL Exception occurred during ticket number validation", e);
+        //         }
+        //     } catch (SQLException e) {
+        //         // Handle SQL exception
+        //         throw new Exception("SQL Exception occurred while preparing statement for ticket number validation", e);
+        //     }
+        // } while (!isUnique);
+
         // Assuming flightNumber is passed from previous page
         // String flightNumber = request.getParameter("flightNumber");
         ArrayList<String> flight_1 = flight_info_list.get(0);
         
-        String requested_airline_ID = flight_1.get(0);
-        String requested_flight_number = flight_1.get(1);
+
+
+        String requested_airline_ID = flight_1.get(1);
+        String requested_flight_number = flight_1.get(0);
         String requested_class = flight_1.get(4);
         String query =  "SELECT \n" +
             "    (CASE \n" +
@@ -123,9 +151,16 @@
         pstmt.setString(9, requested_airline_ID); // For the airline ID in WHERE clause
 
         rs = pstmt.executeQuery();
-        boolean flight_1_capacity_check = rs.getBoolean("has_capacity");
-        if(flight_1_capacity_check){
-            flight_1.add(rs.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
+        boolean flight_1_capacity_check = false;
+        if(rs.next()){
+            flight_1_capacity_check = rs.getBoolean("has_capacity");
+            if(flight_1_capacity_check){
+                flight_1.add(""+ rs.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
+            }
+        }
+        else{
+            throw new Exception("Gotcha Nigga");
+
         }
 
 
@@ -133,10 +168,12 @@
         if(flight_info_list.size()>1){
             ArrayList<String> flight_2 = flight_info_list.get(1);
             
-            String requested_airline_ID_2 = flight_2.get(0);
-            String requested_flight_number_2 = flight_2.get(1);
+            
+
+            String requested_airline_ID_2 = flight_2.get(1);
+            String requested_flight_number_2 = flight_2.get(0);
             String requested_class_2 = flight_2.get(4);
-            String query =  "SELECT \n" +
+            String query2 =  "SELECT \n" +
                 "    (CASE \n" +
                 "        WHEN ? = 'first' THEN Aircraft.first_seats\n" +
                 "        WHEN ? = 'business' THEN Aircraft.business_seats\n" +
@@ -157,7 +194,7 @@
                 "  AND Flight.airline_ID = ?\n" +
                 "GROUP BY Aircraft.first_seats, Aircraft.business_seats, Aircraft.economy_seats;";
             
-            PreparedStatement pstmt2 = conn.prepareStatement(query);
+            PreparedStatement pstmt2 = conn.prepareStatement(query2);
 
             // Assuming the types of requested_class_2, requested_flight_number_2, and requested_airline_ID_2 are all String
             pstmt2.setString(1, requested_class_2); // For the first class check
@@ -170,17 +207,22 @@
             pstmt2.setString(8, requested_flight_number_2); // For the flight number in WHERE clause
             pstmt2.setString(9, requested_airline_ID_2); // For the airline ID in WHERE clause
 
-            rs2 = pstmt.executeQuery();
+            rs2 = pstmt2.executeQuery();
+            if(rs2.next()){
+                // throw new Exception("" + rs2.getInt("booked_seats") + " ------ " + rs2.getBoolean("has_capacity"));
+            }
         }
         boolean flight_2_capacity_check = "0".equals(oneOrRound) ? rs2.getBoolean("has_capacity") : false;
         if(flight_2_capacity_check){
-            flight_2.add(rs2.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
+            ArrayList<String> flight_2 = flight_info_list.get(1);
+            flight_2.add(""+ rs2.getInt("booked_seats")+1); // SEAT NUMBER AT INDEX 5
         }
 
         // if (ticketCount < FLIGHT_CAPACITY) {
         if ("1".equals(oneOrRound) && flight_1_capacity_check || "0".equals(oneOrRound) && flight_1_capacity_check && flight_2_capacity_check){
             String insertTicketSQL = "INSERT INTO Ticket (ticket_number, fname, lname, purchase_date_time, passenger_id, booking_fee, total_fare, is_one_way) VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)";
             pstmtTicket = conn.prepareStatement(insertTicketSQL);
+            // PreparedStatement pstmt3 = conn.prepareStatement(insertTicketSQL);
 
             //Insert into Ticket
             pstmtTicket.setInt(1, nextTicketNumber); // Ticket number
@@ -188,7 +230,9 @@
             pstmtTicket.setString(3, lname); // Last name
             // The fourth placeholder is for 'purchase_date_time', which is set to NOW() in the SQL
             pstmtTicket.setString(4, passengerID); // Passenger ID
-            pstmtTicket.setDouble(5, bookingFee); // Booking fee
+            // pstmtTicket.setDouble(5, totalBookingFee); // Booking fee
+            pstmtTicket.setDouble(5, Double.parseDouble(totalBookingFee)); // Booking fee
+
             pstmtTicket.setDouble(6, Double.parseDouble(totalFare)); // Total fare
             pstmtTicket.setBoolean(7, "1".equals(oneOrRound));
 
@@ -200,8 +244,8 @@
                 pstmtFlightCap = conn.prepareStatement(insertFlightCapSQL);
 
                 pstmtFlightCap.setInt(1, nextTicketNumber);
-                pstmtFlightCap.setString(2, flight_leg.get(1));
-                pstmtFlightCap.setString(3, flight_leg.get(0));            
+                pstmtFlightCap.setString(2, flight_leg.get(0));
+                pstmtFlightCap.setString(3, flight_leg.get(1));            
                 pstmtFlightCap.setString(4, flight_leg.get(4));
                 pstmtFlightCap.setString(5, flight_leg.get(5));
 
@@ -226,8 +270,8 @@
                     pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                     pstmtWaitlist.setString(1,username);
-                    pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(1)));
-                    pstmtWaitlist.setString(3, flight_1.get(0));
+                    pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(0)));
+                    pstmtWaitlist.setString(3, flight_1.get(1));
                     pstmtWaitlist.setString(4, flight_1.get(4));
 
                     pstmtWaitlist.executeUpdate();
@@ -241,9 +285,13 @@
                     pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                     pstmtWaitlist.setString(1,username);
-                    pstmtWaitlist.setInt(2, Integer.parseInt(flight_2.get(1)));
-                    pstmtWaitlist.setString(3, flight_2.get(0));
-                    pstmtWaitlist.setString(4, flight_2.get(4));
+                    // pstmtWaitlist.setInt(2, Integer.parseInt(flight_2.get(0)));
+                    pstmtWaitlist.setInt(2, Integer.parseInt((String) flight_2.get(0)));
+
+                    // pstmtWaitlist.setString(3, flight_2.get(1));
+                    // pstmtWaitlist.setString(4, flight_2.get(4));
+                    pstmtWaitlist.setString(3, (String) flight_2.get(1));
+                    pstmtWaitlist.setString(4, (String) flight_2.get(4));
 
                     pstmtWaitlist.executeUpdate();
 
@@ -257,8 +305,8 @@
                 pstmtWaitlist = conn.prepareStatement(insertWaitlistSQL);
 
                 pstmtWaitlist.setString(1,username);
-                pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(1)));
-                pstmtWaitlist.setString(3, flight_1.get(0));
+                pstmtWaitlist.setInt(2, Integer.parseInt(flight_1.get(0)));
+                pstmtWaitlist.setString(3, flight_1.get(1));
                 pstmtWaitlist.setString(4, flight_1.get(4));
 
                 pstmtWaitlist.executeUpdate();
