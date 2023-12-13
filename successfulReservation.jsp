@@ -159,7 +159,7 @@
             }
         }
         else{
-            throw new Exception("Gotcha Nigga");
+            throw new Exception("Gotcha");
 
         }
 
