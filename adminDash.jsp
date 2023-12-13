@@ -9,7 +9,62 @@
         <!-- Logout link -->
     <a href="adminAction.jsp?action=logout">Logout</a>
     
+    <h2>Reservations By Flight</h2>
+    <form action="adminAction.jsp" method="post">
+        Airline: <input type="text" name="airline" required /><br />
+        Flight Number: <input type="text" name="flight_num" required /><br />
+        <input type="hidden" name="action" value="resByFlight" />
+        <input type="submit" value="Search Reservations" />
+    </form>
 
+    <h2>Reservations By Customer</h2>
+    <form action="adminAction.jsp" method="post">
+        Username: <input type="text" name="customer_username" required /><br />
+        <input type="hidden" name="action" value="resByCustomer" />
+        <input type="submit" value="Search Reservations" />
+    </form>
+
+    <h2>Revenue Metrics By Customer</h2>
+    <form action="adminAction.jsp" method="post">
+        <input type="hidden" name="action" value="revenueMetricsByCustomer" />
+
+        <%-- <label for="username">Customer Username:</label>
+        <input type="text" name="username"><br/> --%>
+
+        <input type="submit" value="Get Revenue" />
+    </form>
+
+    <h2>Most Profitable Customer</h2>
+    <form action="adminAction.jsp" method="post">
+        <input type="hidden" name="action" value="mostProfitableCustomer" />
+
+        <%-- <label for="username">Customer Username:</label>
+        <input type="text" name="username"><br/> --%>
+
+        <input type="submit" value="Get Customer" />
+    </form>
+
+    <h2>Revenue Metrics By Airline</h2>
+    <form action="adminAction.jsp" method="post">
+        <input type="hidden" name="action" value="revenueMetricsByAirline" />
+
+        <%-- <label for="airline">Airline:</label>
+        <input type="text" name="airline"><br/> --%>
+
+        <input type="submit" value="Get Revenue" />
+    </form>
+
+    <h2>Revenue Metrics By Flight</h2>
+    <form action="adminAction.jsp" method="post">
+        <input type="hidden" name="action" value="revenueMetricsByFlight" />
+
+        <%-- <label for="airline">Airline:</label>
+        <input type="text" name="airline"><br/>
+        <label for="flight_num">Flight Number:</label>
+        <input type="text" name="flight_num"><br/> --%>
+
+        <input type="submit" value="Get Revenue" />
+    </form>
 
     <!-- Form to add a new customer -->
     <h2>Add Customer/Representative</h2>

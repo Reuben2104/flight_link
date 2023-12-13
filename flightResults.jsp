@@ -173,7 +173,9 @@
 			%>
 			    
 			<tr>
-		        <td><input type="radio" name=departingFlightNumber value="<%= flightNumber %>"></td> <!-- Added radio button -->
+				<input type="radio" name="departingFlightNumber" value="<%= flightNumber %>_<%= printAirline %>">
+
+		        // <td><input type="radio" name=departingFlightNumber value="<%= flightNumber %>"></td> <!-- Added radio button -->
 		        <td><%= flightNumber %></td>
 		        <td><%= printDate %></td>
 		        <td><%= printAirline %></td>
@@ -243,7 +245,9 @@
 			%>
 			    
 			<tr>
-		        <td><input type="radio" name="returningFlightNumber" value="<%= flightNumber %>"></td> <!-- Added radio button -->
+				<input type="radio" name="returningFlightNumber" value="<%= flightNumber %>_<%= printAirline %>">
+
+		        // <td><input type="radio" name="returningFlightNumber" value="<%= flightNumber %>"></td> <!-- Added radio button -->
 		        <td><%= flightNumber %></td>
 		        <td><%= printDate %></td>
 		        <td><%= printAirline %></td>
@@ -287,3 +291,4 @@
 
 	</body>
 </html>
+

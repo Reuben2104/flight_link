@@ -13,12 +13,30 @@
     <p style="font-size: 30px;">Selected flight(s):</p>
 
     <%
+    String departing_info = request.getParameter("departingFlightNumber");
+    String[] departing_parts = departing_info.split("_"); // Split by the delimiter
+    ArrayList<String> departing_parts_list = new ArrayList<>(Arrays.asList(departing_parts));
+    String departing_flightNumber = parts[0];
+    String departing_airlineID = parts[1];
 
-    String departingFlightNumber = request.getParameter("departingFlightNumber");
-    String returningFlightNumber = request.getParameter("returningFlightNumber");
-    
-    session.setAttribute("departingFlightNumber", departingFlightNumber);
-    session.setAttribute("returningFlightNumber", returningFlightNumber);
+    String returning_info = request.getParameter("returningFlightNumber");
+    String[] returning_parts = returning_info.split("_"); // Split by the delimiter
+    ArrayList<String> returning_parts_list = new ArrayList<>(Arrays.asList(returning_parts));
+    String returning_flightNumber = parts[0];
+    String returning_airlineID = parts[1];
+
+    // String departingFlightNumber = request.getParameter("departingFlightNumber");
+    // String returningFlightNumber = request.getParameter("returningFlightNumber");
+    ArrayList<String> flight_info_list = new ArrayList<>();
+    flight_info_list.add(departing_parts_list);
+    if("0".equals((String) session.getAttribute("oneOrRound"))){
+        flight_info_list.add(returning_parts_list);
+    }
+    session.setAttribute("flight_info_list", flight_info_list);
+    // session.setAttribute("departingFlightNumber", departing_flightNumber);
+    // session.setAttribute("departingAirlineID", departing_airlineID);
+    // session.setAttribute("returningFlightNumber", returning_flightNumber);
+    // session.setAttribute("returningAirlineID", returning_airlineID);
 
     ApplicationDB db = null;
     Connection con = null;
@@ -26,44 +44,71 @@
     try {
         db = new ApplicationDB();
         con = db.getConnection();
-        
-        String departingFlightQuery = "SELECT * FROM Flight WHERE flight_number = ?";
-        PreparedStatement departingFlightStmt = con.prepareStatement(departingFlightQuery);
-        departingFlightStmt.setString(1, departingFlightNumber);
-        ResultSet departingFlightResult = departingFlightStmt.executeQuery();
 
-        if (departingFlightResult.next()) {
-            String departingFlightDetails = "Departing Flight: " +
-                "Flight Number - " + departingFlightResult.getString("flight_number") +
-                ", Departure Date - " + departingFlightResult.getString("departure_date") +
-                ", Airline - " + departingFlightResult.getString("airline_ID") +
-                ", Departure Airport - " + departingFlightResult.getString("departure_airport") +
-                ", Arrival Airport - " + departingFlightResult.getString("destination_airport") +
-                ", Departure Time - " + departingFlightResult.getString("departure_time") +
-                ", Arrival Time - " + departingFlightResult.getString("arrival_time") +
-                ", Price - $" + departingFlightResult.getString("price");
+        for (ArrayList<String> flight: flight_info_list){
+            String flight_airline_id = flight.get(0);
+            String flight_number = flight.get(1);
 
-            out.println("<p>" + departingFlightDetails + "</p>");
+            String flightQuery = "SELECT * FROM Flight WHERE flight_number = ? AND airline_ID = ?";
+            PreparedStatement flightStmt = con.prepareStatement(departingFlightQuery);
+            flightStmt.setString(1, flight_number);
+            flightStmt.setString(2, flight_airline_id);
+            ResultSet flightResult = flightStmt.executeQuery();
+
+            if (flightResult.next()) {
+                String flightDetailsString = "Departing Flight: " +
+                    "Flight Number - " + flightResult.getString("flight_number") +
+                    ", Departure Date - " + flightResult.getString("departure_date") +
+                    ", Airline - " + flightResult.getString("airline_ID") +
+                    ", Departure Airport - " + flightResult.getString("departure_airport") +
+                    ", Arrival Airport - " + flightResult.getString("destination_airport") +
+                    ", Departure Time - " + flightResult.getString("departure_time") +
+                    ", Arrival Time - " + flightResult.getString("arrival_time") +
+                    ", Price - $" + flightResult.getString("price");
+
+                out.println("<p>" + flightDetailsString + "</p>");
+            }
         }
+        
+        // String departingFlightQuery = "SELECT * FROM Flight WHERE flight_number = ? AND airline_ID = ? ";
+        // PreparedStatement departingFlightStmt = con.prepareStatement(departingFlightQuery);
+        // departingFlightStmt.setString(1, departingFlightNumber);
+        // departingFlightStmt.setString(2, departingAirlineID);
+        // ResultSet departingFlightResult = departingFlightStmt.executeQuery();
 
-        String returningFlightQuery = "SELECT * FROM Flight WHERE flight_number = ?";
-        PreparedStatement returningFlightStmt = con.prepareStatement(returningFlightQuery);
-        returningFlightStmt.setString(1, returningFlightNumber);
-        ResultSet returningFlightResult = returningFlightStmt.executeQuery();
+        // if (departingFlightResult.next()) {
+        //     String departingFlightDetails = "Departing Flight: " +
+        //         "Flight Number - " + departingFlightResult.getString("flight_number") +
+        //         ", Departure Date - " + departingFlightResult.getString("departure_date") +
+        //         ", Airline - " + departingFlightResult.getString("airline_ID") +
+        //         ", Departure Airport - " + departingFlightResult.getString("departure_airport") +
+        //         ", Arrival Airport - " + departingFlightResult.getString("destination_airport") +
+        //         ", Departure Time - " + departingFlightResult.getString("departure_time") +
+        //         ", Arrival Time - " + departingFlightResult.getString("arrival_time") +
+        //         ", Price - $" + departingFlightResult.getString("price");
 
-        if (returningFlightResult.next()) {
-            String returningFlightDetails = "Returning Flight: " +
-                "Flight Number - " + returningFlightResult.getString("flight_number") +
-                ", Departure Date - " + returningFlightResult.getString("departure_date") +
-                ", Airline - " + returningFlightResult.getString("airline_ID") +
-                ", Departure Airport - " + returningFlightResult.getString("departure_airport") +
-                ", Arrival Airport - " + returningFlightResult.getString("destination_airport") +
-                ", Departure Time - " + returningFlightResult.getString("departure_time") +
-                ", Arrival Time - " + returningFlightResult.getString("arrival_time") +
-                ", Price - $" + returningFlightResult.getString("price");
+        //     out.println("<p>" + departingFlightDetails + "</p>");
+        // }
 
-            out.println("<p>" + returningFlightDetails + "</p>");
-        }  
+        // String returningFlightQuery = "SELECT * FROM Flight WHERE flight_number = ? AND airline_ID = ? ";
+        // PreparedStatement returningFlightStmt = con.prepareStatement(returningFlightQuery);
+        // returningFlightStmt.setString(1, returningFlightNumber);
+        // returningFlightStmt.setString(2, returningAirlineID);
+        // ResultSet returningFlightResult = returningFlightStmt.executeQuery();
+
+        // if (returningFlightResult.next()) {
+        //     String returningFlightDetails = "Returning Flight: " +
+        //         "Flight Number - " + returningFlightResult.getString("flight_number") +
+        //         ", Departure Date - " + returningFlightResult.getString("departure_date") +
+        //         ", Airline - " + returningFlightResult.getString("airline_ID") +
+        //         ", Departure Airport - " + returningFlightResult.getString("departure_airport") +
+        //         ", Arrival Airport - " + returningFlightResult.getString("destination_airport") +
+        //         ", Departure Time - " + returningFlightResult.getString("departure_time") +
+        //         ", Arrival Time - " + returningFlightResult.getString("arrival_time") +
+        //         ", Price - $" + returningFlightResult.getString("price");
+
+        //     out.println("<p>" + returningFlightDetails + "</p>");
+        // }  
         
    %>   
    
