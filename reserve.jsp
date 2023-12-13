@@ -142,7 +142,7 @@
 	        <select name="class_type" id="class_type">
 	            <option value="Economy">Economy</option>
 	            <option value="Business">Business (5% up-charge)</option>
-	            <option value="First Class">First Class (10% up-charge)</option>
+	            <option value="First">First Class (10% up-charge)</option>
 	        </select>
 			
 			<br>
@@ -151,7 +151,7 @@
             <select name="class_type2" id="class_type2">
                 <option value="Economy">Economy</option>
                 <option value="Business">Business (5% up-charge)</option>
-                <option value="First Class">First Class (10% up-charge)</option>
+                <option value="First">First Class (10% up-charge)</option>
             </select>
 
         <%
@@ -162,7 +162,7 @@
 	        <select name="class_type" id="class_type">
 	            <option value="Economy">Economy</option>
 	            <option value="Business">Business (5% up-charge)</option>
-	            <option value="First Class">First Class (10% up-charge)</option>
+	            <option value="First">First Class (10% up-charge)</option>
 	        </select>
         
         <%

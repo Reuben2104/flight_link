@@ -4,6 +4,8 @@
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.format.DateTimeParseException" %>
+<%@ page import="java.io.*,java.util.*,java.sql.*"%>
+
 
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -133,14 +135,62 @@
             } 
             
             else if ("delete".equals(action)) {
-                String sql = "DELETE FROM Customer WHERE username = ?";
-                pstmt = con.prepareStatement(sql);
-                pstmt.setString(1, username);
-                pstmt.executeUpdate();
-                out.println("<p>User deleted successfully.</p>");
-            
-            } 
+                String usernameToDelete = username; // Username of the user to be deleted
 
+                // Start transaction
+                con.setAutoCommit(false);
+
+                try {
+                    // Delete from Waitlist table
+                    pstmt = con.prepareStatement("DELETE FROM Waitlist WHERE username = ?");
+                    pstmt.setString(1, usernameToDelete);
+                    pstmt.executeUpdate();
+
+                    // Retrieve and delete from Bookings table, while collecting ticket numbers
+                    List<String> ticketNumbers = new ArrayList<>();
+                    pstmt = con.prepareStatement("SELECT ticket_number FROM Bookings WHERE username = ?");
+                    pstmt.setString(1, usernameToDelete);
+                    rs = pstmt.executeQuery();
+                    while (rs.next()) {
+                        ticketNumbers.add(rs.getString("ticket_number"));
+                    }
+
+                    pstmt = con.prepareStatement("DELETE FROM Bookings WHERE username = ?");
+                    pstmt.setString(1, usernameToDelete);
+                    pstmt.executeUpdate();
+
+                    // Delete from FlightCapacity table using the ticket numbers
+                    for (String ticketNumber : ticketNumbers) {
+                        pstmt = con.prepareStatement("DELETE FROM FlightCapacity WHERE ticket_number = ?");
+                        pstmt.setString(1, ticketNumber);
+                        pstmt.executeUpdate();
+                    }
+
+                    // Delete from Ticket table using the ticket numbers
+                    for (String ticketNumber : ticketNumbers) {
+                        pstmt = con.prepareStatement("DELETE FROM Ticket WHERE ticket_number = ?");
+                        pstmt.setString(1, ticketNumber);
+                        pstmt.executeUpdate();
+                    }
+
+                    // Finally, delete the user from the Customer table
+                    pstmt = con.prepareStatement("DELETE FROM Customer WHERE username = ?");
+                    pstmt.setString(1, usernameToDelete);
+                    pstmt.executeUpdate();
+
+                    // Commit transaction
+                    con.commit();
+                    out.println("<p>User and associated data deleted successfully.</p>");
+                } catch (SQLException e) {
+                    // Rollback in case of error
+                    con.rollback();
+                    e.printStackTrace(); // Print the stack trace for debugging
+                    out.println("<p>Error deleting user: " + e.getMessage() + "</p>"); // Show a more detailed error message
+                } finally {
+                    // Set auto-commit back to true
+                    con.setAutoCommit(true);
+                }
+            }
 
             else if ("salesReport".equals(action)) {
                 String selectedMonth = request.getParameter("month");
@@ -221,7 +271,7 @@
                                 out.println("<td>" + rs.getString("ticket_number") + "</td>");
                                 out.println("<td>" + rs.getString("fname") + "</td>");
                                 out.println("<td>" + rs.getString("lname") + "</td>");
-                                out.println("<td>" + rs.getString("passenger_ID") + "</td>");
+                                // out.println("<td>" + rs.getString("passenger_ID") + "</td>");
                                 Timestamp dateString = rs.getTimestamp("purchase_date_time"); // Your original date string
                                 DateTimeFormatter dbFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                                 DateTimeFormatter newFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");

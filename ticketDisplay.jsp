@@ -89,7 +89,7 @@
 		if (classType.compareTo("Business") == 0) {
 			classFee = price * 0.05;
 		}
-		else if (classType.compareTo("First Class") == 0) {
+		else if (classType.compareTo("First") == 0) {
 			classFee = price * 0.10;
 		}
 		//Computing booking fee based on domestic/international
@@ -122,7 +122,7 @@
 				classFee2 += price2 * 0.05;
 			}
 			
-			if (classType2.compareTo("First Class") == 0) {
+			if (classType2.compareTo("First") == 0) {
 				classFee2 += price2 * 0.10;
 			}
 		}
